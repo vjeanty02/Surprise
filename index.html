@@ -27,12 +27,20 @@
   }
 
   body {
-    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg1));
+    background-size: 300% 300%;
+    animation: gradientShift 12s ease-in-out infinite;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
+  }
+
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 
   /* ===== Cœurs flottants en fond ===== */
@@ -55,10 +63,16 @@
     background: white;
     border-radius: 24px;
     padding: 48px 56px;
-    box-shadow: 0 20px 50px rgba(232, 64, 142, 0.25);
+    box-shadow: 0 14px 30px rgba(232, 64, 142, 0.2);
     text-align: center;
     z-index: 2;
     max-width: 90vw;
+    animation: floatCard 4.5s ease-in-out infinite;
+  }
+
+  @keyframes floatCard {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
   }
 
   h1 {
@@ -98,6 +112,10 @@
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  button:active {
+    transform: scale(0.94);
   }
 
   #yes-btn {
@@ -150,6 +168,31 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* Contenu de l'étape (badge + emoji + titre + texte) : ce bloc bouge à chaque changement */
+  .step-content {
+    animation-duration: 0.45s;
+    animation-timing-function: ease;
+    animation-fill-mode: both;
+  }
+
+  .step-content.slide-right {
+    animation-name: slideInRight;
+  }
+
+  .step-content.slide-left {
+    animation-name: slideInLeft;
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(36px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-36px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
   .step-badge {
     display: inline-block;
     background: var(--pink);
@@ -165,6 +208,13 @@
   .step-emoji {
     font-size: 2.4rem;
     margin-bottom: 10px;
+    animation: popIn 0.45s ease;
+  }
+
+  @keyframes popIn {
+    0%   { transform: scale(0.4); opacity: 0; }
+    60%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); }
   }
 
   .step-title {
@@ -178,7 +228,7 @@
     font-size: 1rem;
     line-height: 1.55;
     color: #444;
-    min-height: 140px;
+    min-height: 110px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -297,10 +347,12 @@
   <div class="tries" id="tries"></div>
 
   <div class="carousel-wrap" id="carousel">
-    <div class="step-badge" id="step-badge">ETAP 1 / 5</div>
-    <div class="step-emoji" id="step-emoji">💕</div>
-    <div class="step-title" id="step-title"></div>
-    <div class="step-text" id="step-text"></div>
+    <div class="step-content" id="step-content">
+      <div class="step-badge" id="step-badge">ETAP 1 / 7</div>
+      <div class="step-emoji" id="step-emoji">💕</div>
+      <div class="step-title" id="step-title"></div>
+      <div class="step-text" id="step-text"></div>
+    </div>
 
     <div class="carousel-nav">
       <button class="nav-arrow" id="prev-btn" aria-label="Étape précédente">←</button>
@@ -320,23 +372,28 @@
   const STEPS = [
     {
       emoji: "💕",
-      title: "Kè Kontan",
-      text: "Renmen avèm se kè kontan chak jou, ti kado de ouff de tanzantan, ti sipriz, ti flè, fè ti sòti de tanzantan, 100% fidelite, 100% lanmou, 0% jalouzi. Depi w mennaj mwen, si w te lèd w ap vin bèl, si w te gen movèz fòm w ap vin gen bèl fòm, si vant ou te gwo vant ou ap vin plat, si w pat gen lajan w ap vin bòs lady. Ou panse sa yo enposib? Mennaj mwen pou w wè 😂"
+      title: "Kè Kontan (1/2)",
+      text: "Renmen avèm se kè kontan chak jou, ti kado de ouff de tanzantan, ti sipriz, ti flè, fè ti sòti de tanzantan, 100% fidelite, 100% lanmou, 0% jalouzi."
+    },
+    {
+      emoji: "🥰",
+      title: "Kè Kontan (2/2)",
+      text: "Depi w mennaj mwen, si w te lèd w ap vin bèl, si w te gen movèz fòm w ap vin gen bèl fòm, si vant ou te gwo vant ou ap vin plat, si w pat gen lajan w ap vin bòs lady. Ou panse sa yo enposib? Mennaj mwen pou w wè 😂"
     },
     {
       emoji: "💍",
-      title: "Fiyansaj & Maryaj",
-      text: "Renmen avèm se fiyansaj epi maryaj nan 2 an si w santi w prè mantalman. Se yon bèl vi apre maryaj, kote n ap deside nan ki peyi nou vle al viv (Ayiti, Brezil, Kanada, RD). Madanm mwen ap deside si l vle al travay oswa non. Si l pa al travay, m ap peye l 3 fwa salè minimòm nan. Ti vizit, ti vwayaj de tanzantan ✈️🛩️, minimum an Repiblik Dominikèn 😂"
+      title: "Fiyansaj & Maryaj (1/2)",
+      text: "Renmen avèm se fiyansaj epi maryaj nan 2 an si w santi w prè mantalman. Se yon bèl vi apre maryaj, kote n ap deside nan ki peyi nou vle al viv (Ayiti, Brezil, Kanada, RD)."
+    },
+    {
+      emoji: "✈️",
+      title: "Fiyansaj & Maryaj (2/2)",
+      text: "Madanm mwen ap deside si l vle al travay oswa non. Si l pa al travay, m ap peye l 3 fwa salè minimòm nan. Ti vizit, ti vwayaj de tanzantan ✈️🛩️, minimum an Repiblik Dominikèn 😂"
     },
     {
       emoji: "🤫",
       title: "Sekrè...",
-      text: "Sa k nan tèt ou a . 
-    😈    👩🏽
-    ||==   ||==
-    🍆   🍑
-   /  \   /  \
-  /    \ /    \, wi l ap la tou 😏 Men si w vle m eksplike w kijan sa ap pase pi an detay… ekri m an prive 🤭"
+      text: "Sa k nan tèt la, wi l ap la tou 😏 Men si w vle m eksplike w kijan sa ap pase pi an detay… ekri m an prive 🤭"
     },
     {
       emoji: "🤭",
@@ -372,6 +429,7 @@
      2. RÉFÉRENCES DOM
   ============================================================ */
   const carousel     = document.getElementById('carousel');
+  const stepContent   = document.getElementById('step-content');
   const stepBadge     = document.getElementById('step-badge');
   const stepEmoji     = document.getElementById('step-emoji');
   const stepTitle     = document.getElementById('step-title');
@@ -402,7 +460,7 @@
     });
   }
 
-  function showStep(index) {
+  function showStep(index, direction = 'right') {
     currentStep = index;
     const step = STEPS[index];
 
@@ -414,15 +472,26 @@
     prevBtn.disabled = index === 0;
     nextBtn.disabled = index === STEPS.length - 1;
 
+    // Relance l'animation de glissement à chaque changement d'étape
+    stepContent.classList.remove('slide-right', 'slide-left');
+    void stepContent.offsetWidth; // force le navigateur à "oublier" l'animation précédente
+    stepContent.classList.add(direction === 'left' ? 'slide-left' : 'slide-right');
+
     renderDots();
   }
 
-  prevBtn.addEventListener('click', () => {
-    if (currentStep > 0) showStep(currentStep - 1);
+  prevBtn.addEventListener('click', (e) => {
+    if (currentStep > 0) {
+      showStep(currentStep - 1, 'left');
+      burstHearts(e.currentTarget);
+    }
   });
 
-  nextBtn.addEventListener('click', () => {
-    if (currentStep < STEPS.length - 1) showStep(currentStep + 1);
+  nextBtn.addEventListener('click', (e) => {
+    if (currentStep < STEPS.length - 1) {
+      showStep(currentStep + 1, 'right');
+      burstHearts(e.currentTarget);
+    }
   });
 
   /* ============================================================
@@ -530,6 +599,37 @@
       document.body.appendChild(heart);
       setTimeout(() => heart.remove(), 10000);
     }, 600);
+  }
+
+  function burstHearts(originEl) {
+    const rect = originEl.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const symbols = ['💗', '✨', '💕'];
+
+    for (let i = 0; i < 6; i++) {
+      const h = document.createElement('div');
+      h.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      h.style.position = 'fixed';
+      h.style.left = centerX + 'px';
+      h.style.top = centerY + 'px';
+      h.style.fontSize = (12 + Math.random() * 10) + 'px';
+      h.style.pointerEvents = 'none';
+      h.style.zIndex = '20';
+      h.style.transition = 'transform 0.7s ease-out, opacity 0.7s ease-out';
+      document.body.appendChild(h);
+
+      const angle = (Math.PI * 2 * i) / 6 + Math.random() * 0.5;
+      const distance = 40 + Math.random() * 30;
+      const dx = Math.cos(angle) * distance;
+      const dy = Math.sin(angle) * distance;
+
+      requestAnimationFrame(() => {
+        h.style.transform = `translate(${dx}px, ${dy}px) scale(1.4)`;
+        h.style.opacity = '0';
+      });
+      setTimeout(() => h.remove(), 750);
+    }
   }
 
   function createConfetti() {
