@@ -368,26 +368,17 @@
   /* ============================================================
      1. DONNÉES
   ============================================================ */
-  const STEPS = [
+<script>
+  const steps = [
     {
       emoji: "💕",
-      title: "Kè Kontan (1/2)",
-      text: "Renmen avèm se kè kontan chak jou, ti kado de ouff de tanzantan, ti sipriz, ti flè, fè ti sòti de tanzantan, 100% fidelite, 100% lanmou, 0% jalouzi."
-    },
-    {
-      emoji: "🥰",
-      title: "Kè Kontan (2/2)",
-      text: "Depi w mennaj mwen, si w te lèd w ap vin bèl, si w te gen movèz fòm w ap vin gen bèl fòm, si vant ou te gwo vant ou ap vin plat, si w pat gen lajan w ap vin bòs lady. Ou panse sa yo enposib? Mennaj mwen pou w wè 😂"
+      title: "Kè Kontan",
+      text: "Renmen avèm se kè kontan chak jou, ti kado de ouff de tanzantan, ti sipriz, ti flè, fè ti sòti de tanzantan, 100% fidelite, 100% lanmou, 0% jalouzi. Depi w mennaj mwen, si w te lèd w ap vin bèl, si w te gen movèz fòm w ap vin gen bèl fòm, si vant ou te gwo vant ou ap vin plat, si w pat gen lajan w ap vin bòs lady. Ou panse sa yo enposib? Mennaj mwen pou w wè 😂"
     },
     {
       emoji: "💍",
-      title: "Fiyansaj & Maryaj (1/2)",
-      text: "Renmen avèm se fiyansaj epi maryaj nan 2 an si w santi w prè mantalman. Se yon bèl vi apre maryaj, kote n ap deside nan ki peyi nou vle al viv (Ayiti, Brezil, Kanada, RD)."
-    },
-    {
-      emoji: "✈️",
-      title: "Fiyansaj & Maryaj (2/2)",
-      text: "Madanm mwen ap deside si l vle al travay oswa non. Si l pa al travay, m ap peye l 3 fwa salè minimòm nan. Ti vizit, ti vwayaj de tanzantan ✈️🛩️, minimum an Repiblik Dominikèn 😂"
+      title: "Fiyansaj & Maryaj",
+      text: "Renmen avèm se fiyansaj epi maryaj nan 2 an si w santi w prè mantalman. Se yon bèl vi apre maryaj, kote n ap deside nan ki peyi nou vle al viv (Ayiti, Brezil, Kanada, RD). Madanm mwen ap deside si l vle al travay oswa non. Si l pa al travay, m ap peye l 3 fwa salè minimòm nan. Ti vizit, ti vwayaj de tanzantan ✈️🛩️, minimum an Repiblik Dominikèn 😂"
     },
     {
       emoji: "🤫",
@@ -405,15 +396,59 @@
       text: "Kè w kontan la, pa vre? 😏 Ou gen yon sèl kesyon k ap travay nan tèt ou: \"Èske l ap jwe, oubyen èske l serye?\" M ap kite w nan dout la… 😂🤭"
     }
   ];
-
-  const YES_MESSAGES = [
+ 
+  let currentStep = 0;
+ 
+  const carousel = document.getElementById('carousel');
+  const stepBadge = document.getElementById('step-badge');
+  const stepEmoji = document.getElementById('step-emoji');
+  const stepTitle = document.getElementById('step-title');
+  const stepText = document.getElementById('step-text');
+  const dotsContainer = document.getElementById('dots');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+ 
+  function renderDots() {
+    dotsContainer.innerHTML = '';
+    steps.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === currentStep ? ' active' : '');
+      dotsContainer.appendChild(dot);
+    });
+  }
+ 
+  function showStep(index) {
+    currentStep = index;
+    const step = steps[index];
+    stepBadge.textContent = `ETAP ${index + 1} / ${steps.length}`;
+    stepEmoji.textContent = step.emoji;
+    stepTitle.textContent = step.title;
+    stepText.textContent = step.text;
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === steps.length - 1;
+    renderDots();
+  }
+ 
+  prevBtn.addEventListener('click', () => {
+    if (currentStep > 0) showStep(currentStep - 1);
+  });
+ 
+  nextBtn.addEventListener('click', () => {
+    if (currentStep < steps.length - 1) showStep(currentStep + 1);
+  });
+  const noBtn = document.getElementById('no-btn');
+  const yesBtn = document.getElementById('yes-btn');
+  const result = document.getElementById('result');
+  const triesEl = document.getElementById('tries');
+ 
+  const yesMessages = [
     "Oui !! 🥰",
     "Enfin ! Tu m'as fait tourner en bourrique 😅",
     "C'est le plus beau jour de ma vie 💖",
     "Je le savais depuis le début 😏"
   ];
-
-  const DODGE_MESSAGES = [
+ 
+  const dodgeMessages = [
     "Tu es sûre... ? 👀",
     "Essaie encore ! 😂",
     "Trop lente ! 🏃‍♂️💨",
@@ -421,114 +456,44 @@
     "Il va falloir être plus rapide 😄",
     "Aïe, raté ! 😆"
   ];
-
-  const CONFETTI_COLORS = ['#ff5da2', '#ffd166', '#06d6a0', '#118ab2', '#ef476f'];
-
-  /* ============================================================
-     2. RÉFÉRENCES DOM
-  ============================================================ */
-  const carousel     = document.getElementById('carousel');
-  const stepContent   = document.getElementById('step-content');
-  const stepBadge     = document.getElementById('step-badge');
-  const stepEmoji     = document.getElementById('step-emoji');
-  const stepTitle     = document.getElementById('step-title');
-  const stepText      = document.getElementById('step-text');
-  const dotsContainer = document.getElementById('dots');
-  const prevBtn       = document.getElementById('prev-btn');
-  const nextBtn       = document.getElementById('next-btn');
-
-  const noBtn   = document.getElementById('no-btn');
-  const yesBtn  = document.getElementById('yes-btn');
-  const result  = document.getElementById('result');
-  const triesEl = document.getElementById('tries');
-  const emojiEl = document.querySelector('.emoji');
-
-  let currentStep = 0;
+ 
   let attempts = 0;
   let noBtnPositioned = false;
-
-  /* ============================================================
-     3. CARROUSEL DES ÉTAPES
-  ============================================================ */
-  function renderDots() {
-    dotsContainer.innerHTML = '';
-    STEPS.forEach((_, i) => {
-      const dot = document.createElement('div');
-      dot.className = 'dot' + (i === currentStep ? ' active' : '');
-      dotsContainer.appendChild(dot);
-    });
-  }
-
-  function showStep(index, direction = 'right') {
-    currentStep = index;
-    const step = STEPS[index];
-
-    stepBadge.textContent = `ETAP ${index + 1} / ${STEPS.length}`;
-    stepEmoji.textContent = step.emoji;
-    stepTitle.textContent = step.title;
-    stepText.textContent  = step.text;
-
-    prevBtn.disabled = index === 0;
-    nextBtn.disabled = index === STEPS.length - 1;
-
-    // Relance l'animation de glissement à chaque changement d'étape
-    stepContent.classList.remove('slide-right', 'slide-left');
-    void stepContent.offsetWidth; // force le navigateur à "oublier" l'animation précédente
-    stepContent.classList.add(direction === 'left' ? 'slide-left' : 'slide-right');
-
-    renderDots();
-  }
-
-  prevBtn.addEventListener('click', (e) => {
-    if (currentStep > 0) {
-      showStep(currentStep - 1, 'left');
-      burstHearts(e.currentTarget);
-    }
-  });
-
-  nextBtn.addEventListener('click', (e) => {
-    if (currentStep < STEPS.length - 1) {
-      showStep(currentStep + 1, 'right');
-      burstHearts(e.currentTarget);
-    }
-  });
-
-  /* ============================================================
-     4. BOUTON "NON" QUI SE SAUVE
-  ============================================================ */
+ 
   function placeNoButtonInitially() {
     // Place le bouton "Non" juste à côté du bouton "Oui", sans chevauchement
     const yesRect = yesBtn.getBoundingClientRect();
-    const noRect  = noBtn.getBoundingClientRect();
+    const noRect = noBtn.getBoundingClientRect();
     const gap = 24;
     const margin = 20;
-
+ 
     let left = yesRect.right + gap;
-    let top  = yesRect.top + (yesRect.height - noRect.height) / 2;
-
+    let top = yesRect.top + (yesRect.height - noRect.height) / 2;
+ 
     // Si ça déborde à droite de l'écran, on le met en dessous à la place
     if (left + noRect.width + margin > window.innerWidth) {
       left = yesRect.left;
-      top  = yesRect.bottom + gap;
+      top = yesRect.bottom + gap;
     }
-
+ 
     noBtn.style.left = Math.max(margin, left) + 'px';
-    noBtn.style.top  = Math.max(margin, top) + 'px';
+    noBtn.style.top = Math.max(margin, top) + 'px';
     noBtnPositioned = true;
   }
-
+ 
   function moveNoButton() {
+    // Position fixe -> on prend les dimensions réelles du bouton
     const btnRect = noBtn.getBoundingClientRect();
     const yesRect = yesBtn.getBoundingClientRect();
     const margin = 20;
     let newX, newY, overlapsYes;
-
+ 
     do {
       const maxX = window.innerWidth - btnRect.width - margin;
       const maxY = window.innerHeight - btnRect.height - margin;
       newX = Math.max(margin, Math.random() * maxX);
       newY = Math.max(margin, Math.random() * maxY);
-
+ 
       // On évite de retomber pile sur le bouton "Oui"
       overlapsYes = !(
         newX + btnRect.width < yesRect.left - 10 ||
@@ -537,37 +502,51 @@
         newY > yesRect.bottom + 10
       );
     } while (overlapsYes);
-
+ 
     noBtn.style.left = newX + 'px';
-    noBtn.style.top  = newY + 'px';
+    noBtn.style.top = newY + 'px';
     noBtnPositioned = true;
   }
-
-
- noBtn.addEventListener('mouseenter', dodge);      // souri pase sou li
-noBtn.addEventListener('click', (e) => { e.preventDefault(); dodge(); });   // klike sou li
-noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }); // tap sou telefòn
-
-  /* ============================================================
-     5. VALIDATION ("OUI")
-  ============================================================ */
+ 
+  function dodge() {
+    attempts++;
+    moveNoButton();
+    result.textContent = dodgeMessages[Math.floor(Math.random() * dodgeMessages.length)];
+    triesEl.textContent = attempts === 1
+      ? "1 tentative pour t'échapper 😏"
+      : attempts + " tentatives pour t'échapper 😏";
+ 
+    // Le bouton "Oui" grandit un peu à chaque essai raté, histoire d'insister gentiment
+    const scale = Math.min(1 + attempts * 0.05, 2);
+    yesBtn.style.transform = `scale(${scale})`;
+  }
+ 
+  // On fait fuir le bouton dès qu'on essaie de cliquer OU de le survoler
+  noBtn.addEventListener('mouseenter', dodge);
+  noBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    dodge();
+  });
+  noBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    dodge();
+  });
+ 
   yesBtn.addEventListener('click', () => {
-    result.textContent = YES_MESSAGES[Math.floor(Math.random() * YES_MESSAGES.length)];
-    triesEl.textContent = '';
-
+    result.textContent = yesMessages[Math.floor(Math.random() * yesMessages.length)];
+    triesEl.textContent = "";
     noBtn.style.display = 'none';
     yesBtn.style.display = 'none';
-    emojiEl.textContent = '🎉';
-
+    document.querySelector('.emoji').textContent = '🎉';
     createConfetti();
+ 
     showStep(0);
     carousel.classList.add('active');
   });
-
-  /* ============================================================
-     6. EFFETS VISUELS (cœurs + confettis)
-  ============================================================ */
+ 
+  // Petits cœurs flottants en fond
   function createHearts() {
+    const heartsContainer = document.body;
     setInterval(() => {
       const heart = document.createElement('div');
       heart.className = 'heart';
@@ -575,43 +554,13 @@ noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }); /
       heart.style.left = Math.random() * 100 + 'vw';
       heart.style.fontSize = (16 + Math.random() * 20) + 'px';
       heart.style.animationDuration = (6 + Math.random() * 4) + 's';
-      document.body.appendChild(heart);
+      heartsContainer.appendChild(heart);
       setTimeout(() => heart.remove(), 10000);
     }, 600);
   }
-
-  function burstHearts(originEl) {
-    const rect = originEl.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const symbols = ['💗', '✨', '💕'];
-
-    for (let i = 0; i < 6; i++) {
-      const h = document.createElement('div');
-      h.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-      h.style.position = 'fixed';
-      h.style.left = centerX + 'px';
-      h.style.top = centerY + 'px';
-      h.style.fontSize = (12 + Math.random() * 10) + 'px';
-      h.style.pointerEvents = 'none';
-      h.style.zIndex = '20';
-      h.style.transition = 'transform 0.7s ease-out, opacity 0.7s ease-out';
-      document.body.appendChild(h);
-
-      const angle = (Math.PI * 2 * i) / 6 + Math.random() * 0.5;
-      const distance = 40 + Math.random() * 30;
-      const dx = Math.cos(angle) * distance;
-      const dy = Math.sin(angle) * distance;
-
-      requestAnimationFrame(() => {
-        h.style.transform = `translate(${dx}px, ${dy}px) scale(1.4)`;
-        h.style.opacity = '0';
-      });
-      setTimeout(() => h.remove(), 750);
-    }
-  }
-
+ 
   function createConfetti() {
+    const colors = ['#ff5da2', '#ffd166', '#06d6a0', '#118ab2', '#ef476f'];
     for (let i = 0; i < 60; i++) {
       const c = document.createElement('div');
       c.style.position = 'fixed';
@@ -619,13 +568,12 @@ noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }); /
       c.style.left = Math.random() * 100 + 'vw';
       c.style.width = '8px';
       c.style.height = '8px';
-      c.style.background = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+      c.style.background = colors[Math.floor(Math.random() * colors.length)];
       c.style.borderRadius = '50%';
       c.style.zIndex = '10';
       c.style.pointerEvents = 'none';
       c.style.transition = 'transform 2.5s ease-in, opacity 2.5s ease-in';
       document.body.appendChild(c);
-
       requestAnimationFrame(() => {
         c.style.transform = `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`;
         c.style.opacity = '0';
@@ -633,18 +581,14 @@ noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }); /
       setTimeout(() => c.remove(), 2600);
     }
   }
-
-  /* ============================================================
-     7. INITIALISATION
-  ============================================================ */
+ 
   window.addEventListener('resize', () => {
     if (noBtnPositioned) moveNoButton();
   });
-
+ 
   window.addEventListener('load', placeNoButtonInitially);
-
+ 
   createHearts();
-})();
 </script>
 
 </body>
