@@ -361,27 +361,322 @@
   </div>
 </div>
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Une question importante 💌</title>
+<style>
+  :root {
+    --pink: #ff5da2;
+    --pink-dark: #e8408e;
+    --bg1: #ffdde1;
+    --bg2: #ffe9c7;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', Arial, sans-serif;
+  }
+
+  body {
+    background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .heart {
+    position: absolute;
+    color: rgba(255, 93, 162, 0.35);
+    font-size: 24px;
+    animation: float 8s linear infinite;
+    pointer-events: none;
+  }
+
+  @keyframes float {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10%  { opacity: 1; }
+    100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+  }
+
+  .card {
+    background: white;
+    border-radius: 24px;
+    padding: 48px 56px;
+    box-shadow: 0 20px 50px rgba(232, 64, 142, 0.25);
+    text-align: center;
+    z-index: 2;
+    max-width: 90vw;
+  }
+
+  h1 {
+    color: var(--pink-dark);
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+
+  .emoji {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  .buttons {
+    margin-top: 30px;
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    position: relative;
+    min-height: 70px;
+  }
+
+  button {
+    border: none;
+    border-radius: 50px;
+    padding: 16px 30px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  #yes-btn {
+    background: var(--pink);
+    color: white;
+    box-shadow: 0 8px 20px rgba(255, 93, 162, 0.4);
+  }
+
+  #yes-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 26px rgba(255, 93, 162, 0.55);
+  }
+
+  #no-btn {
+    background: #f1f1f1;
+    color: #555;
+    position: fixed;
+    transition: top 0.18s ease, left 0.18s ease;
+    z-index: 5;
+  }
+
+  #result {
+    margin-top: 22px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--pink-dark);
+    min-height: 30px;
+  }
+
+  .tries {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #999;
+  }
+
+  /* --- Carousel des étapes --- */
+  .carousel-wrap {
+    display: none;
+    margin-top: 24px;
+    width: 100%;
+  }
+
+  .carousel-wrap.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-badge {
+    display: inline-block;
+    background: var(--pink);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  .step-emoji {
+    font-size: 2.4rem;
+    margin-bottom: 10px;
+  }
+
+  .step-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--pink-dark);
+    margin-bottom: 10px;
+  }
+
+  .step-text {
+    font-size: 1rem;
+    line-height: 1.55;
+    color: #444;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+
+  .carousel-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 22px;
+  }
+
+  .nav-arrow {
+    background: #fff0f5;
+    color: var(--pink-dark);
+    border: 2px solid var(--pink);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .nav-arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .nav-arrow:not(:disabled):hover {
+    background: var(--pink);
+    color: white;
+    transform: scale(1.08);
+  }
+
+  .dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #f3c9d9;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .dot.active {
+    background: var(--pink);
+    transform: scale(1.3);
+  }
+
+  @media (max-width: 480px) {
+    .card {
+      padding: 32px 24px;
+      border-radius: 18px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+    }
+
+    .emoji {
+      font-size: 2.2rem;
+    }
+
+    button {
+      padding: 13px 20px;
+      font-size: 0.9rem;
+    }
+
+    .buttons {
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    #result {
+      font-size: 1.05rem;
+    }
+
+    .step-text {
+      font-size: 0.9rem;
+      min-height: 170px;
+    }
+
+    .step-title {
+      font-size: 1rem;
+    }
+
+    .nav-arrow {
+      width: 36px;
+      height: 36px;
+      font-size: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="emoji">💖</div>
+  <h1>Veux-tu devenir ma petite amie ?</h1>
+
+  <div class="buttons">
+    <button id="yes-btn">Oui, mais je veux voir ce que tu propose 👀</button>
+    <button id="no-btn">Non, j'ai un petit copain</button>
+  </div>
+
+  <div id="result"></div>
+  <div class="tries" id="tries"></div>
+
+  <div class="carousel-wrap" id="carousel">
+    <div class="step-badge" id="step-badge">ETAP 1 / 5</div>
+    <div class="step-emoji" id="step-emoji">💕</div>
+    <div class="step-title" id="step-title"></div>
+    <div class="step-text" id="step-text"></div>
+
+    <div class="carousel-nav">
+      <button class="nav-arrow" id="prev-btn">←</button>
+      <div class="dots" id="dots"></div>
+      <button class="nav-arrow" id="next-btn">→</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const steps = [
     {
       emoji: "💕",
-      title: "Kè Kontan (1/2)",
-      text: "Renmen avèm se kè kontan chak jou, ti kado de ouff de tanzantan, ti sipriz, ti flè, fè ti sòti de tanzantan, 100% fidelite, 100% lanmou, 0% jalouzi."
-    },
-    {
-      emoji: "🥰",
-      title: "Kè Kontan (2/2)",
-      text: "Depi w mennaj mwen, si w te lèd w ap vin bèl, si w te gen movèz fòm w ap vin gen bèl fòm, si vant ou te gwo vant ou ap vin plat, si w pat gen lajan w ap vin bòs lady. Ou panse sa yo enposib? Mennaj mwen pou w wè 😂"
+      title: "Kè Kontan",
+      text: "Renmen avèm se kè kontan chak jou, ti kado de ouff de tanzantan, ti sipriz, ti flè, fè ti sòti de tanzantan, 100% fidelite, 100% lanmou, 0% jalouzi. Depi w mennaj mwen, si w te lèd w ap vin bèl, si w te gen movèz fòm w ap vin gen bèl fòm, si vant ou te gwo vant ou ap vin plat, si w pat gen lajan w ap vin bòs lady. Ou panse sa yo enposib? Mennaj mwen pou w wè 😂"
     },
     {
       emoji: "💍",
-      title: "Fiyansaj & Maryaj (1/2)",
-      text: "Renmen avèm se fiyansaj epi maryaj nan 2 an si w santi w prè mantalman. Se yon bèl vi apre maryaj, kote n ap deside nan ki peyi nou vle al viv (Ayiti, Brezil, Kanada, RD)."
-    },
-    {
-      emoji: "✈️",
-      title: "Fiyansaj & Maryaj (2/2)",
-      text: "Madanm mwen ap deside si l vle al travay oswa non. Si l pa al travay, m ap peye l 3 fwa salè minimòm nan. Ti vizit, ti vwayaj de tanzantan ✈️🛩️, minimum an Repiblik Dominikèn 😂"
+      title: "Fiyansaj & Maryaj",
+      text: "Renmen avèm se fiyansaj epi maryaj nan 2 an si w santi w prè mantalman. Se yon bèl vi apre maryaj, kote n ap deside nan ki peyi nou vle al viv (Ayiti, Brezil, Kanada, RD). Madanm mwen ap deside si l vle al travay oswa non. Si l pa al travay, m ap peye l 3 fwa salè minimòm nan. Ti vizit, ti vwayaj de tanzantan ✈️🛩️, minimum an Repiblik Dominikèn 😂"
     },
     {
       emoji: "🤫",
@@ -399,9 +694,9 @@
       text: "Kè w kontan la, pa vre? 😏 Ou gen yon sèl kesyon k ap travay nan tèt ou: \"Èske l ap jwe, oubyen èske l serye?\" M ap kite w nan dout la… 😂🤭"
     }
   ];
- 
+
   let currentStep = 0;
- 
+
   const carousel = document.getElementById('carousel');
   const stepBadge = document.getElementById('step-badge');
   const stepEmoji = document.getElementById('step-emoji');
@@ -410,7 +705,7 @@
   const dotsContainer = document.getElementById('dots');
   const prevBtn = document.getElementById('prev-btn');
   const nextBtn = document.getElementById('next-btn');
- 
+
   function renderDots() {
     dotsContainer.innerHTML = '';
     steps.forEach((_, i) => {
@@ -419,7 +714,7 @@
       dotsContainer.appendChild(dot);
     });
   }
- 
+
   function showStep(index) {
     currentStep = index;
     const step = steps[index];
@@ -431,11 +726,11 @@
     nextBtn.disabled = index === steps.length - 1;
     renderDots();
   }
- 
+
   prevBtn.addEventListener('click', () => {
     if (currentStep > 0) showStep(currentStep - 1);
   });
- 
+
   nextBtn.addEventListener('click', () => {
     if (currentStep < steps.length - 1) showStep(currentStep + 1);
   });
@@ -443,14 +738,14 @@
   const yesBtn = document.getElementById('yes-btn');
   const result = document.getElementById('result');
   const triesEl = document.getElementById('tries');
- 
+
   const yesMessages = [
     "Oui !! 🥰",
     "Enfin ! Tu m'as fait tourner en bourrique 😅",
     "C'est le plus beau jour de ma vie 💖",
     "Je le savais depuis le début 😏"
   ];
- 
+
   const dodgeMessages = [
     "Tu es sûre... ? 👀",
     "Essaie encore ! 😂",
@@ -459,44 +754,44 @@
     "Il va falloir être plus rapide 😄",
     "Aïe, raté ! 😆"
   ];
- 
+
   let attempts = 0;
   let noBtnPositioned = false;
- 
+
   function placeNoButtonInitially() {
     // Place le bouton "Non" juste à côté du bouton "Oui", sans chevauchement
     const yesRect = yesBtn.getBoundingClientRect();
     const noRect = noBtn.getBoundingClientRect();
     const gap = 24;
     const margin = 20;
- 
+
     let left = yesRect.right + gap;
     let top = yesRect.top + (yesRect.height - noRect.height) / 2;
- 
+
     // Si ça déborde à droite de l'écran, on le met en dessous à la place
     if (left + noRect.width + margin > window.innerWidth) {
       left = yesRect.left;
       top = yesRect.bottom + gap;
     }
- 
+
     noBtn.style.left = Math.max(margin, left) + 'px';
     noBtn.style.top = Math.max(margin, top) + 'px';
     noBtnPositioned = true;
   }
- 
+
   function moveNoButton() {
     // Position fixe -> on prend les dimensions réelles du bouton
     const btnRect = noBtn.getBoundingClientRect();
     const yesRect = yesBtn.getBoundingClientRect();
     const margin = 20;
     let newX, newY, overlapsYes;
- 
+
     do {
       const maxX = window.innerWidth - btnRect.width - margin;
       const maxY = window.innerHeight - btnRect.height - margin;
       newX = Math.max(margin, Math.random() * maxX);
       newY = Math.max(margin, Math.random() * maxY);
- 
+
       // On évite de retomber pile sur le bouton "Oui"
       overlapsYes = !(
         newX + btnRect.width < yesRect.left - 10 ||
@@ -505,12 +800,12 @@
         newY > yesRect.bottom + 10
       );
     } while (overlapsYes);
- 
+
     noBtn.style.left = newX + 'px';
     noBtn.style.top = newY + 'px';
     noBtnPositioned = true;
   }
- 
+
   function dodge() {
     attempts++;
     moveNoButton();
@@ -518,12 +813,12 @@
     triesEl.textContent = attempts === 1
       ? "1 tentative pour t'échapper 😏"
       : attempts + " tentatives pour t'échapper 😏";
- 
+
     // Le bouton "Oui" grandit un peu à chaque essai raté, histoire d'insister gentiment
     const scale = Math.min(1 + attempts * 0.05, 2);
     yesBtn.style.transform = `scale(${scale})`;
   }
- 
+
   // On fait fuir le bouton dès qu'on essaie de cliquer OU de le survoler
   noBtn.addEventListener('mouseenter', dodge);
   noBtn.addEventListener('click', (e) => {
@@ -534,7 +829,7 @@
     e.preventDefault();
     dodge();
   });
- 
+
   yesBtn.addEventListener('click', () => {
     result.textContent = yesMessages[Math.floor(Math.random() * yesMessages.length)];
     triesEl.textContent = "";
@@ -542,11 +837,11 @@
     yesBtn.style.display = 'none';
     document.querySelector('.emoji').textContent = '🎉';
     createConfetti();
- 
+
     showStep(0);
     carousel.classList.add('active');
   });
- 
+
   // Petits cœurs flottants en fond
   function createHearts() {
     const heartsContainer = document.body;
@@ -561,7 +856,7 @@
       setTimeout(() => heart.remove(), 10000);
     }, 600);
   }
- 
+
   function createConfetti() {
     const colors = ['#ff5da2', '#ffd166', '#06d6a0', '#118ab2', '#ef476f'];
     for (let i = 0; i < 60; i++) {
@@ -584,15 +879,17 @@
       setTimeout(() => c.remove(), 2600);
     }
   }
- 
+
   window.addEventListener('resize', () => {
     if (noBtnPositioned) moveNoButton();
   });
- 
+
   window.addEventListener('load', placeNoButtonInitially);
- 
+
   createHearts();
 </script>
 
+</body>
+</html>
 </body>
 </html>
