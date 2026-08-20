@@ -128,14 +128,13 @@
     transform: scale(1.08);
     box-shadow: 0 12px 26px rgba(255, 93, 162, 0.55);
   }
-
-  #no-btn {
-    background: #f1f1f1;
-    color: #555;
-    position: fixed;
-    transition: top 0.18s ease, left 0.18s ease;
-    z-index: 5;
-  }
+#no-btn {
+  background: #f1f1f1;
+  color: #555;
+  position: fixed;
+  transition: top 0.18s ease, left 0.18s ease;  /* ← se sa ki fè l "glise" dousman */
+  z-index: 5;
+}
 
   #result {
     margin-top: 22px;
@@ -544,30 +543,10 @@
     noBtnPositioned = true;
   }
 
-  function dodge() {
-    attempts++;
-    moveNoButton();
 
-    result.textContent = DODGE_MESSAGES[Math.floor(Math.random() * DODGE_MESSAGES.length)];
-    triesEl.textContent = attempts === 1
-      ? "1 tentative pour t'échapper 😏"
-      : `${attempts} tentatives pour t'échapper 😏`;
-
-    // Le bouton "Oui" grandit un peu à chaque essai raté
-    const scale = Math.min(1 + attempts * 0.05, 2);
-    yesBtn.style.transform = `scale(${scale})`;
-  }
-
-  // On fait fuir le bouton dès qu'on essaie de cliquer OU de le survoler
-  noBtn.addEventListener('mouseenter', dodge);
-  noBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    dodge();
-  });
-  noBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    dodge();
-  }, { passive: false });
+ noBtn.addEventListener('mouseenter', dodge);      // souri pase sou li
+noBtn.addEventListener('click', (e) => { e.preventDefault(); dodge(); });   // klike sou li
+noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); }); // tap sou telefòn
 
   /* ============================================================
      5. VALIDATION ("OUI")
