@@ -32,6 +32,85 @@
     position: relative;
   }
 
+  #intro-screen {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, var(--bg1), var(--bg2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.intro-card {
+  background: white;
+  border-radius: 24px;
+  padding: 45px 35px;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(232, 64, 142, 0.25);
+  animation: introAppear 0.7s ease;
+}
+
+.intro-emoji {
+  font-size: 4rem;
+  margin-bottom: 15px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.intro-card h1 {
+  color: var(--pink-dark);
+  font-size: 1.7rem;
+  margin: 0 0 12px;
+}
+
+.intro-card p {
+  color: #777;
+  font-size: 1rem;
+  margin-bottom: 28px;
+}
+
+#open-btn {
+  background: var(--pink);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 15px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(255, 93, 162, 0.35);
+  transition: transform 0.2s ease;
+}
+
+#open-btn:hover {
+  transform: scale(1.06);
+}
+
+@keyframes introAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+#intro-screen.hidden {
+  animation: introDisappear 0.5s ease forwards;
+}
+
+@keyframes introDisappear {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
   .heart {
     position: absolute;
     color: rgba(255, 93, 162, 0.35);
@@ -276,6 +355,17 @@
 </style>
 </head>
 <body>
+  <div id="intro-screen">
+  <div class="intro-card">
+    <div class="intro-emoji">💌</div>
+
+    <h1>Ou sur ou vle ouvri l? 👀</h1>
+
+    <p>M pa konseye w non... 😂</p>
+
+    <button id="open-btn">Wi, ouvri l 💖</button>
+  </div>
+</div>
 <audio id="background-music" autoplay loop>
   <source src="love-song.mp3" type="audio/mpeg">
 </audio>
@@ -306,15 +396,33 @@
 </div>
 
 <script>
-  const music = document.getElementById('background-music');
+  // ==============================
+  // 🎵 INTRO + MUSIQUE
+  // ==============================
 
-music.volume = 0.25;
+  const introScreen = document.getElementById("intro-screen");
+  const openBtn = document.getElementById("open-btn");
+  const music = document.getElementById("background-music");
 
-window.addEventListener('load', () => {
-  music.play().catch(() => {
-    console.log("Autoplay bloqué par le navigateur.");
+  openBtn.addEventListener("click", function () {
+
+    // Kache ekran intro a
+    introScreen.style.display = "none";
+
+    // Kòmanse mizik la
+    music.volume = 0.25;
+    music.currentTime = 0;
+
+    music.play().catch(function (error) {
+      console.log("La musique n'a pas pu démarrer :", error);
+    });
   });
-});
+
+
+  // ==============================
+  // 💕 LES ÉTAPES
+  // ==============================
+
   const steps = [
     {
       emoji: "💕",
@@ -329,66 +437,111 @@ window.addEventListener('load', () => {
     {
       emoji: "💍",
       title: "Maryaj",
-      text: "Epi si bagay yo mache... maryaj. Nap chwazi kote nou vle viv ✈️🛩️😂. Si madanm mwen pap travay, m ap peye l 2 fwa salè minimòm poul ka toujou ret bèl"
+      text: "Epi si bagay yo mache... maryaj. Nap chwazi kote nou vle viv ✈️🛩️😂. Si madanm mwen pap travay, m ap peye l 2 fwa salè minimòm poul ka toujou ret bèl."
     },
-
     {
       emoji: "🤭",
       title: "Ou nan Dout la",
       text: "Kè w kontan la men ou nan dout. Ou gen yon sèl kesyon wap poze tèt ou: \"Èske lap jwe, oubyen èske l serye?\" 😂🤭"
     },
-     {
+    {
       emoji: "🤭",
       title: "M pap kite w nan dout",
-      text: "Ou vle konnen si se vre? ekrim prive, Sa pa enteresew... jis inyore l😂"
+      text: "Ou vle konnen si se vre? ekrim prive... Sa pa enteresew, jis inyore l 😂"
     }
-
   ];
 
   let currentStep = 0;
 
-  const carousel = document.getElementById('carousel');
-  const stepBadge = document.getElementById('step-badge');
-  const stepEmoji = document.getElementById('step-emoji');
-  const stepTitle = document.getElementById('step-title');
-  const stepText = document.getElementById('step-text');
-  const dotsContainer = document.getElementById('dots');
-  const prevBtn = document.getElementById('prev-btn');
-  const nextBtn = document.getElementById('next-btn');
+  const carousel = document.getElementById("carousel");
+  const stepBadge = document.getElementById("step-badge");
+  const stepEmoji = document.getElementById("step-emoji");
+  const stepTitle = document.getElementById("step-title");
+  const stepText = document.getElementById("step-text");
+  const dotsContainer = document.getElementById("dots");
+  const prevBtn = document.getElementById("prev-btn");
+  const nextBtn = document.getElementById("next-btn");
+
+
+  // ==============================
+  // ⚪ DOTS
+  // ==============================
 
   function renderDots() {
-    dotsContainer.innerHTML = '';
+    dotsContainer.innerHTML = "";
+
     steps.forEach((_, i) => {
-      const dot = document.createElement('div');
-      dot.className = 'dot' + (i === currentStep ? ' active' : '');
+      const dot = document.createElement("div");
+
+      dot.className =
+        "dot" + (i === currentStep ? " active" : "");
+
       dotsContainer.appendChild(dot);
     });
   }
 
+
+  // ==============================
+  // 📖 AFFICHER UNE ÉTAPE
+  // ==============================
+
   function showStep(index) {
+
     currentStep = index;
+
     const step = steps[index];
-    stepBadge.textContent = `ETAP ${index + 1} / ${steps.length}`;
+
+    stepBadge.textContent =
+      `ETAP ${index + 1} / ${steps.length}`;
+
     stepEmoji.textContent = step.emoji;
     stepTitle.textContent = step.title;
     stepText.textContent = step.text;
+
     prevBtn.disabled = index === 0;
     nextBtn.disabled = index === steps.length - 1;
+
     renderDots();
   }
 
-  prevBtn.addEventListener('click', () => {
-    if (currentStep > 0) showStep(currentStep - 1);
+
+  // ==============================
+  // ⬅️ BOUTON PRÉCÉDENT
+  // ==============================
+
+  prevBtn.addEventListener("click", function () {
+
+    if (currentStep > 0) {
+      showStep(currentStep - 1);
+    }
+
   });
 
-  nextBtn.addEventListener('click', () => {
-    if (currentStep < steps.length - 1) showStep(currentStep + 1);
-  });
-  const noBtn = document.getElementById('no-btn');
-  const yesBtn = document.getElementById('yes-btn');
-  const result = document.getElementById('result');
-  const triesEl = document.getElementById('tries');
 
+  // ==============================
+  // ➡️ BOUTON SUIVANT
+  // ==============================
+
+  nextBtn.addEventListener("click", function () {
+
+    if (currentStep < steps.length - 1) {
+      showStep(currentStep + 1);
+    }
+
+  });
+
+
+  // ==============================
+  // 💖 BOUTONS OUI / NON
+  // ==============================
+
+  const noBtn = document.getElementById("no-btn");
+  const yesBtn = document.getElementById("yes-btn");
+  const result = document.getElementById("result");
+  const triesEl = document.getElementById("tries");
+
+
+  // Messages quand elle clique sur OUI
   const yesMessages = [
     "Oui !! 🥰",
     "Enfin ! Tu m'as fait tourner en bourrique 😅",
@@ -396,6 +549,8 @@ window.addEventListener('load', () => {
     "Je le savais depuis le début 😏"
   ];
 
+
+  // Messages quand elle essaie de cliquer sur NON
   const dodgeMessages = [
     "Tu es sûre... ? 👀",
     "Essaie encore ! 😂",
@@ -405,138 +560,392 @@ window.addEventListener('load', () => {
     "Aïe, raté ! 😆"
   ];
 
+
   let attempts = 0;
   let noBtnPositioned = false;
 
+
+  // ==============================
+  // 📍 POSITION INITIALE DU NON
+  // ==============================
+
   function placeNoButtonInitially() {
-    // Place le bouton "Non" juste à côté du bouton "Oui", sans chevauchement
+
     const yesRect = yesBtn.getBoundingClientRect();
     const noRect = noBtn.getBoundingClientRect();
+
     const gap = 24;
     const margin = 20;
 
     let left = yesRect.right + gap;
-    let top = yesRect.top + (yesRect.height - noRect.height) / 2;
 
-    // Si ça déborde à droite de l'écran, on le met en dessous à la place
-    if (left + noRect.width + margin > window.innerWidth) {
+    let top =
+      yesRect.top +
+      (yesRect.height - noRect.height) / 2;
+
+
+    // Si ça dépasse à droite
+    if (
+      left + noRect.width + margin >
+      window.innerWidth
+    ) {
+
       left = yesRect.left;
       top = yesRect.bottom + gap;
     }
 
-    noBtn.style.left = Math.max(margin, left) + 'px';
-    noBtn.style.top = Math.max(margin, top) + 'px';
+
+    noBtn.style.left =
+      Math.max(margin, left) + "px";
+
+    noBtn.style.top =
+      Math.max(margin, top) + "px";
+
     noBtnPositioned = true;
   }
+
+
+  // ==============================
+  // 🏃 FAIRE BOUGER LE NON
+  // ==============================
 
   function moveNoButton() {
-    // Position fixe -> on prend les dimensions réelles du bouton
-    const btnRect = noBtn.getBoundingClientRect();
-    const yesRect = yesBtn.getBoundingClientRect();
+
+    const btnRect =
+      noBtn.getBoundingClientRect();
+
+    const yesRect =
+      yesBtn.getBoundingClientRect();
+
     const margin = 20;
-    let newX, newY, overlapsYes;
+
+    let newX;
+    let newY;
+    let overlapsYes;
+
 
     do {
-      const maxX = window.innerWidth - btnRect.width - margin;
-      const maxY = window.innerHeight - btnRect.height - margin;
-      newX = Math.max(margin, Math.random() * maxX);
-      newY = Math.max(margin, Math.random() * maxY);
 
-      // On évite de retomber pile sur le bouton "Oui"
+      const maxX =
+        window.innerWidth -
+        btnRect.width -
+        margin;
+
+      const maxY =
+        window.innerHeight -
+        btnRect.height -
+        margin;
+
+
+      newX =
+        Math.max(
+          margin,
+          Math.random() * maxX
+        );
+
+
+      newY =
+        Math.max(
+          margin,
+          Math.random() * maxY
+        );
+
+
+      // Éviter le bouton Oui
       overlapsYes = !(
-        newX + btnRect.width < yesRect.left - 10 ||
-        newX > yesRect.right + 10 ||
-        newY + btnRect.height < yesRect.top - 10 ||
-        newY > yesRect.bottom + 10
+        newX + btnRect.width <
+          yesRect.left - 10 ||
+
+        newX >
+          yesRect.right + 10 ||
+
+        newY + btnRect.height <
+          yesRect.top - 10 ||
+
+        newY >
+          yesRect.bottom + 10
       );
+
     } while (overlapsYes);
 
-    noBtn.style.left = newX + 'px';
-    noBtn.style.top = newY + 'px';
+
+    noBtn.style.left =
+      newX + "px";
+
+    noBtn.style.top =
+      newY + "px";
+
     noBtnPositioned = true;
   }
 
-  function dodge() {
-    attempts++;
-    moveNoButton();
-    result.textContent = dodgeMessages[Math.floor(Math.random() * dodgeMessages.length)];
-    triesEl.textContent = attempts === 1
-      ? "1 tentative pour t'échapper 😏"
-      : attempts + " tentatives pour t'échapper 😏";
 
-    // Le bouton "Oui" grandit un peu à chaque essai raté, histoire d'insister gentiment
-    const scale = Math.min(1 + attempts * 0.05, 1);
-    yesBtn.style.transform = `scale(${scale})`;
+  // ==============================
+  // 😂 DODGE
+  // ==============================
+
+  function dodge() {
+
+    attempts++;
+
+    moveNoButton();
+
+
+    result.textContent =
+      dodgeMessages[
+        Math.floor(
+          Math.random() *
+          dodgeMessages.length
+        )
+      ];
+
+
+    triesEl.textContent =
+      attempts === 1
+        ? "1 tentative pour t'échapper 😏"
+        : attempts +
+          " tentatives pour t'échapper 😏";
+
+
+    // Faire grandir le bouton Oui
+    const scale =
+      Math.min(
+        1 + attempts * 0.05,
+        1.5
+      );
+
+
+    yesBtn.style.transform =
+      `scale(${scale})`;
   }
 
-  // On fait fuir le bouton dès qu'on essaie de cliquer OU de le survoler
-  noBtn.addEventListener('mouseenter', dodge);
-  noBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    dodge();
-  });
-  noBtn.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    dodge();
-  });
 
-  yesBtn.addEventListener('click', () => {
-    result.textContent = yesMessages[Math.floor(Math.random() * yesMessages.length)];
-    triesEl.textContent = "";
-    noBtn.style.display = 'none';
-    yesBtn.style.display = 'none';
-    document.querySelector('.emoji').textContent = '🎉';
-    createConfetti();
+  // ==============================
+  // 🖱️ SOURIS
+  // ==============================
 
-    showStep(0);
-    carousel.classList.add('active');
-  });
+  noBtn.addEventListener(
+    "mouseenter",
+    dodge
+  );
 
-  // Petits cœurs flottants en fond
+
+  noBtn.addEventListener(
+    "click",
+    function (e) {
+
+      e.preventDefault();
+
+      dodge();
+
+    }
+  );
+
+
+  // ==============================
+  // 📱 TACTILE
+  // ==============================
+
+  noBtn.addEventListener(
+    "touchstart",
+    function (e) {
+
+      e.preventDefault();
+
+      dodge();
+
+    },
+    { passive: false }
+  );
+
+
+  // ==============================
+  // ❤️ BOUTON OUI
+  // ==============================
+
+  yesBtn.addEventListener(
+    "click",
+    function () {
+
+      result.textContent =
+        yesMessages[
+          Math.floor(
+            Math.random() *
+            yesMessages.length
+          )
+        ];
+
+
+      triesEl.textContent = "";
+
+
+      noBtn.style.display = "none";
+
+      yesBtn.style.display = "none";
+
+
+      document.querySelector(
+        ".emoji"
+      ).textContent = "🎉";
+
+
+      createConfetti();
+
+
+      showStep(0);
+
+      carousel.classList.add("active");
+    }
+  );
+
+
+  // ==============================
+  // 💗 COEURS FLOTTANTS
+  // ==============================
+
   function createHearts() {
-    const heartsContainer = document.body;
-    setInterval(() => {
-      const heart = document.createElement('div');
-      heart.className = 'heart';
-      heart.textContent = '💗';
-      heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.fontSize = (16 + Math.random() * 20) + 'px';
-      heart.style.animationDuration = (6 + Math.random() * 4) + 's';
-      heartsContainer.appendChild(heart);
-      setTimeout(() => heart.remove(), 10000);
+
+    const heartsContainer =
+      document.body;
+
+
+    setInterval(function () {
+
+      const heart =
+        document.createElement("div");
+
+
+      heart.className = "heart";
+
+      heart.textContent = "💗";
+
+
+      heart.style.left =
+        Math.random() * 100 + "vw";
+
+
+      heart.style.fontSize =
+        16 +
+        Math.random() * 20 +
+        "px";
+
+
+      heart.style.animationDuration =
+        6 +
+        Math.random() * 4 +
+        "s";
+
+
+      heartsContainer.appendChild(
+        heart
+      );
+
+
+      setTimeout(function () {
+
+        heart.remove();
+
+      }, 10000);
+
     }, 600);
   }
 
+
+  // ==============================
+  // 🎉 CONFETTIS
+  // ==============================
+
   function createConfetti() {
-    const colors = ['#ff5da2', '#ffd166', '#06d6a0', '#118ab2', '#ef476f'];
+
+    const colors = [
+      "#ff5da2",
+      "#ffd166",
+      "#06d6a0",
+      "#118ab2",
+      "#ef476f"
+    ];
+
+
     for (let i = 0; i < 60; i++) {
-      const c = document.createElement('div');
-      c.style.position = 'fixed';
-      c.style.top = '-10px';
-      c.style.left = Math.random() * 100 + 'vw';
-      c.style.width = '8px';
-      c.style.height = '8px';
-      c.style.background = colors[Math.floor(Math.random() * colors.length)];
-      c.style.borderRadius = '50%';
-      c.style.zIndex = '10';
-      c.style.pointerEvents = 'none';
-      c.style.transition = 'transform 2.5s ease-in, opacity 2.5s ease-in';
+
+      const c =
+        document.createElement("div");
+
+
+      c.style.position = "fixed";
+      c.style.top = "-10px";
+      c.style.left =
+        Math.random() * 100 + "vw";
+
+      c.style.width = "8px";
+      c.style.height = "8px";
+
+      c.style.background =
+        colors[
+          Math.floor(
+            Math.random() *
+            colors.length
+          )
+        ];
+
+      c.style.borderRadius = "50%";
+      c.style.zIndex = "10";
+      c.style.pointerEvents = "none";
+
+      c.style.transition =
+        "transform 2.5s ease-in, opacity 2.5s ease-in";
+
+
       document.body.appendChild(c);
-      requestAnimationFrame(() => {
-        c.style.transform = `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`;
-        c.style.opacity = '0';
+
+
+      requestAnimationFrame(function () {
+
+        c.style.transform =
+          `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`;
+
+        c.style.opacity = "0";
+
       });
-      setTimeout(() => c.remove(), 2600);
+
+
+      setTimeout(function () {
+
+        c.remove();
+
+      }, 2600);
+
     }
   }
 
-  window.addEventListener('resize', () => {
-    if (noBtnPositioned) moveNoButton();
-  });
 
-  window.addEventListener('load', placeNoButtonInitially);
+  // ==============================
+  // 🔄 REDIMENSIONNEMENT
+  // ==============================
+
+  window.addEventListener(
+    "resize",
+    function () {
+
+      if (noBtnPositioned) {
+        moveNoButton();
+      }
+
+    }
+  );
+
+
+  // ==============================
+  // 🚀 INITIALISATION
+  // ==============================
+
+  window.addEventListener(
+    "load",
+    placeNoButtonInitially
+  );
+
 
   createHearts();
+
 </script>
 
 </body>
