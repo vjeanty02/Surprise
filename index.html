@@ -276,7 +276,9 @@
 </style>
 </head>
 <body>
-
+<audio id="background-music" autoplay loop>
+  <source src="love-song.mp3" type="audio/mpeg">
+</audio>
 <div class="card">
   <div class="emoji">💖</div>
   <h1>Veux-tu devenir ma petite amie ?</h1>
@@ -304,6 +306,15 @@
 </div>
 
 <script>
+  const music = document.getElementById('background-music');
+
+music.volume = 0.25;
+
+window.addEventListener('load', () => {
+  music.play().catch(() => {
+    console.log("Autoplay bloqué par le navigateur.");
+  });
+});
   const steps = [
     {
       emoji: "💕",
