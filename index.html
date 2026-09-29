@@ -191,7 +191,14 @@
     transition: top 0.18s ease, left 0.18s ease;
     z-index: 5;
   }
-
+  #friend-btn {
+  background: #f1f1f1;
+  color: #555;
+  position: fixed;
+  transition: top 0.18s ease, left 0.18s ease;
+  z-index: 5;
+}
+  
   #result {
     margin-top: 22px;
     font-size: 1.3rem;
@@ -376,6 +383,7 @@
   <div class="buttons">
     <button id="yes-btn">Oui, mais je veux voir ce que tu propose 👀</button>
     <button id="no-btn">Non, j'ai un petit copain</button>
+    <button id="friend-btn">Je veux être que ton ami 😅</button>
   </div>
 
   <div id="result"></div>
@@ -397,555 +405,851 @@
 
 <script>
   // ==============================
-  // 🎵 INTRO + MUSIQUE
-  // ==============================
+// 🎵 INTRO + MUSIQUE
+// ==============================
 
-  const introScreen = document.getElementById("intro-screen");
-  const openBtn = document.getElementById("open-btn");
-  const music = document.getElementById("background-music");
+const introScreen = document.getElementById("intro-screen");
+const openBtn = document.getElementById("open-btn");
+const music = document.getElementById("background-music");
 
-  openBtn.addEventListener("click", function () {
+openBtn.addEventListener("click", function () {
 
-    // Kache ekran intro a
-    introScreen.style.display = "none";
+  // Cacher l'écran d'introduction
+  introScreen.style.display = "none";
 
-    // Kòmanse mizik la
-    music.volume = 0.25;
-    music.currentTime = 0;
+  // Démarrer la musique
+  music.volume = 0.25;
+  music.currentTime = 0;
 
-    music.play().catch(function (error) {
-      console.log("La musique n'a pas pu démarrer :", error);
-    });
+  music.play().catch(function (error) {
+    console.log("La musique n'a pas pu démarrer :", error);
   });
+});
 
 
-  // ==============================
-  // 💕 LES ÉTAPES
-  // ==============================
+// ==============================
+// 💕 LES ÉTAPES
+// ==============================
 
-  const steps = [
-    {
-      emoji: "💕",
-      title: "Kè Kontan",
-      text: "Renmen avèm se kè kontan chak jou, fè ti sòti de tanzantan, ti sipriz, ti kado de tanzantan, 100% fidelite, 100% lanmou, 0% jalouzi. Map toujou la pou ou, fè w santi w spesyal, respekte w, pran swen w, epi renmen w san kondisyon."
-    },
-    {
-      emoji: "😂",
-      title: "Wap Glow up",
-      text: "Depi w mennaj mwen, si w te lèd w ap vin bèl, siw te bèl wap vin pi bèl, si vant ou te gwo, vant ou ap vin plat, si boudaw te plat lap vin gwo, si w pat gen lajan w ap vin bòs lady. Ou panse sa yo enposib? Mennaj mwen pou w wè 😂"
-    },
-    {
-      emoji: "💍",
-      title: "Maryaj",
-      text: "Epi si bagay yo mache... maryaj. Nap chwazi kote nou vle viv ✈️🛩️😂. Si madanm mwen pap travay, m ap peye l 2 fwa salè minimòm poul ka toujou ret bèl."
-    },
-    {
-      emoji: "🤭",
-      title: "Ou nan Dout la",
-      text: "Kè w kontan la men ou nan dout. Ou gen yon sèl kesyon wap poze tèt ou: \"Èske lap jwe, oubyen èske l serye?\" 😂🤭"
-    },
-    {
-      emoji: "🤭",
-      title: "M pap kite w nan dout",
-      text: "Ou vle konnen si se vre? ekrim prive... Sa pa enteresew, jis inyore l 😂"
-    }
-  ];
+const steps = [
+  {
+    emoji: "💕",
+    title: "Kè Kontan",
+    text: "Renmen avèm se kè kontan chak jou, fè ti sòti de tanzantan, ti sipriz, ti kado de tanzantan, 100% fidelite, 100% lanmou, 0% jalouzi. Map toujou la pou ou, fè w santi w spesyal, respekte w, pran swen w, epi renmen w san kondisyon."
+  },
 
-  let currentStep = 0;
+  {
+    emoji: "😂",
+    title: "Wap Glow up",
+    text: "Depi w mennaj mwen, si w te lèd w ap vin bèl, siw te bèl wap vin pi bèl, si vant ou te gwo, vant ou ap vin plat, si boudaw te plat lap vin gwo, si w pat gen lajan w ap vin bòs lady. Ou panse sa yo enposib? Mennaj mwen pou w wè 😂"
+  },
 
-  const carousel = document.getElementById("carousel");
-  const stepBadge = document.getElementById("step-badge");
-  const stepEmoji = document.getElementById("step-emoji");
-  const stepTitle = document.getElementById("step-title");
-  const stepText = document.getElementById("step-text");
-  const dotsContainer = document.getElementById("dots");
-  const prevBtn = document.getElementById("prev-btn");
-  const nextBtn = document.getElementById("next-btn");
+  {
+    emoji: "💍",
+    title: "Maryaj",
+    text: "Epi si bagay yo mache... maryaj. Nap chwazi kote nou vle viv ✈️🛩️😂. Si madanm mwen pap travay, m ap peye l 2 fwa salè minimòm poul ka toujou ret bèl."
+  },
 
+  {
+    emoji: "🤭",
+    title: "Ou nan Dout la",
+    text: "Kè w kontan la men ou nan dout. Ou gen yon sèl kesyon wap poze tèt ou: \"Èske lap jwe, oubyen èske l serye?\" 😂🤭"
+  },
 
-  // ==============================
-  // ⚪ DOTS
-  // ==============================
-
-  function renderDots() {
-    dotsContainer.innerHTML = "";
-
-    steps.forEach((_, i) => {
-      const dot = document.createElement("div");
-
-      dot.className =
-        "dot" + (i === currentStep ? " active" : "");
-
-      dotsContainer.appendChild(dot);
-    });
+  {
+    emoji: "🤭",
+    title: "M pap kite w nan dout",
+    text: "Ou vle konnen si se vre? ekrim prive... Sa pa enteresew, jis inyore l 😂"
   }
+];
+
+let currentStep = 0;
+
+const carousel = document.getElementById("carousel");
+const stepBadge = document.getElementById("step-badge");
+const stepEmoji = document.getElementById("step-emoji");
+const stepTitle = document.getElementById("step-title");
+const stepText = document.getElementById("step-text");
+const dotsContainer = document.getElementById("dots");
+const prevBtn = document.getElementById("prev-btn");
+const nextBtn = document.getElementById("next-btn");
 
 
-  // ==============================
-  // 📖 AFFICHER UNE ÉTAPE
-  // ==============================
+// ==============================
+// ⚪ DOTS
+// ==============================
 
-  function showStep(index) {
+function renderDots() {
 
-    currentStep = index;
+  dotsContainer.innerHTML = "";
 
-    const step = steps[index];
+  steps.forEach((_, i) => {
 
-    stepBadge.textContent =
-      `ETAP ${index + 1} / ${steps.length}`;
+    const dot = document.createElement("div");
 
-    stepEmoji.textContent = step.emoji;
-    stepTitle.textContent = step.title;
-    stepText.textContent = step.text;
+    dot.className =
+      "dot" + (i === currentStep ? " active" : "");
 
-    prevBtn.disabled = index === 0;
-    nextBtn.disabled = index === steps.length - 1;
-
-    renderDots();
-  }
-
-
-  // ==============================
-  // ⬅️ BOUTON PRÉCÉDENT
-  // ==============================
-
-  prevBtn.addEventListener("click", function () {
-
-    if (currentStep > 0) {
-      showStep(currentStep - 1);
-    }
-
+    dotsContainer.appendChild(dot);
   });
+}
 
 
-  // ==============================
-  // ➡️ BOUTON SUIVANT
-  // ==============================
+// ==============================
+// 📖 AFFICHER UNE ÉTAPE
+// ==============================
 
-  nextBtn.addEventListener("click", function () {
+function showStep(index) {
 
-    if (currentStep < steps.length - 1) {
-      showStep(currentStep + 1);
-    }
+  currentStep = index;
 
-  });
+  const step = steps[index];
 
+  stepBadge.textContent =
+    `ETAP ${index + 1} / ${steps.length}`;
 
-  // ==============================
-  // 💖 BOUTONS OUI / NON
-  // ==============================
+  stepEmoji.textContent =
+    step.emoji;
 
-  const noBtn = document.getElementById("no-btn");
-  const yesBtn = document.getElementById("yes-btn");
-  const result = document.getElementById("result");
-  const triesEl = document.getElementById("tries");
+  stepTitle.textContent =
+    step.title;
 
+  stepText.textContent =
+    step.text;
 
-  // Messages quand elle clique sur OUI
-  const yesMessages = [
-    "Oui !! 🥰",
-    "Enfin ! Tu m'as fait tourner en bourrique 😅",
-    "C'est le plus beau jour de ma vie 💖",
-    "Je le savais depuis le début 😏"
-  ];
+  prevBtn.disabled =
+    index === 0;
 
+  nextBtn.disabled =
+    index === steps.length - 1;
 
-  // Messages quand elle essaie de cliquer sur NON
-  const dodgeMessages = [
-    "Tu es sûre... ? 👀",
-    "Essaie encore ! 😂",
-    "Trop lente ! 🏃‍♂️💨",
-    "Presque ! 😜",
-    "Il va falloir être plus rapide 😄",
-    "Aïe, raté ! 😆"
-  ];
+  renderDots();
+}
 
 
-  let attempts = 0;
-  let noBtnPositioned = false;
+// ==============================
+// ⬅️ BOUTON PRÉCÉDENT
+// ==============================
+
+prevBtn.addEventListener("click", function () {
+
+  if (currentStep > 0) {
+
+    showStep(currentStep - 1);
+
+  }
+
+});
 
 
-  // ==============================
-  // 📍 POSITION INITIALE DU NON
-  // ==============================
+// ==============================
+// ➡️ BOUTON SUIVANT
+// ==============================
 
-  function placeNoButtonInitially() {
+nextBtn.addEventListener("click", function () {
 
-    const yesRect = yesBtn.getBoundingClientRect();
-    const noRect = noBtn.getBoundingClientRect();
+  if (currentStep < steps.length - 1) {
 
-    const gap = 24;
-    const margin = 20;
+    showStep(currentStep + 1);
 
-    let left = yesRect.right + gap;
+  }
 
-    let top =
-      yesRect.top +
-      (yesRect.height - noRect.height) / 2;
+});
 
 
-    // Si ça dépasse à droite
-    if (
-      left + noRect.width + margin >
-      window.innerWidth
-    ) {
+// ==============================
+// 💖 BOUTONS OUI / NON / AMI
+// ==============================
 
-      left = yesRect.left;
-      top = yesRect.bottom + gap;
-    }
+const noBtn =
+  document.getElementById("no-btn");
+
+const friendBtn =
+  document.getElementById("friend-btn");
+
+const yesBtn =
+  document.getElementById("yes-btn");
+
+const result =
+  document.getElementById("result");
+
+const triesEl =
+  document.getElementById("tries");
 
 
-    noBtn.style.left =
-      Math.max(margin, left) + "px";
+// ==============================
+// 💬 MESSAGES OUI
+// ==============================
 
-    noBtn.style.top =
-      Math.max(margin, top) + "px";
+const yesMessages = [
+  "Oui !! 🥰",
+  "Enfin ! Tu m'as fait tourner en bourrique 😅",
+  "C'est le plus beau jour de ma vie 💖",
+  "Je le savais depuis le début 😏"
+];
 
-    noBtnPositioned = true;
+
+// ==============================
+// 🏃 MESSAGES BOUTON "J'AI UN GARS"
+// ==============================
+
+const dodgeMessages = [
+  "Tu es sûre... ? 👀",
+  "Essaie encore ! 😂",
+  "Trop lente ! 🏃‍♂️💨",
+  "Presque ! 😜",
+  "Il va falloir être plus rapide 😄",
+  "Aïe, raté ! 😆",
+  "Tu pensais vraiment pouvoir cliquer ? 😂"
+];
+
+
+// ==============================
+// 🤝 MESSAGES "JUSTE AMI"
+// ==============================
+
+const friendMessages = [
+  "Amis seulement ? 😭😂",
+  "Non non, cette option est en maintenance 😂",
+  "Tu essaies vraiment de fuir ? 👀",
+  "Ami seulement... on va négocier ça 😏",
+  "Même le bouton veut pas te laisser faire 😂",
+  "Tu ne peux pas t'échapper comme ça 😭",
+  "Être juste ami ? Le bouton refuse 😂",
+  "Cette réponse n'est pas disponible 😭😂"
+];
+
+
+let attempts = 0;
+
+let noBtnPositioned = false;
+let friendBtnPositioned = false;
+
+
+// ==============================
+// 📍 POSITION INITIALE DES BOUTONS
+// ==============================
+
+function placeButtonsInitially() {
+
+  const yesRect =
+    yesBtn.getBoundingClientRect();
+
+  const noRect =
+    noBtn.getBoundingClientRect();
+
+  const friendRect =
+    friendBtn.getBoundingClientRect();
+
+  const gap = 20;
+  const margin = 20;
+
+
+  // ------------------------------
+  // Bouton "J'ai un petit copain"
+  // ------------------------------
+
+  let noLeft =
+    yesRect.right + gap;
+
+  let noTop =
+    yesRect.top +
+    (yesRect.height - noRect.height) / 2;
+
+
+  if (
+    noLeft +
+    noRect.width +
+    margin >
+    window.innerWidth
+  ) {
+
+    noLeft = margin;
+
+    noTop =
+      yesRect.bottom + gap;
   }
 
 
-  // ==============================
-  // 🏃 FAIRE BOUGER LE NON
-  // ==============================
+  noBtn.style.left =
+    Math.max(margin, noLeft) + "px";
 
-  function moveNoButton() {
-
-    const btnRect =
-      noBtn.getBoundingClientRect();
-
-    const yesRect =
-      yesBtn.getBoundingClientRect();
-
-    const margin = 20;
-
-    let newX;
-    let newY;
-    let overlapsYes;
+  noBtn.style.top =
+    Math.max(margin, noTop) + "px";
 
 
-    do {
+  // ------------------------------
+  // Bouton "Juste ami"
+  // ------------------------------
 
-      const maxX =
-        window.innerWidth -
-        btnRect.width -
-        margin;
+  let friendLeft =
+    noBtn.getBoundingClientRect().right +
+    gap;
 
-      const maxY =
-        window.innerHeight -
-        btnRect.height -
-        margin;
-
-
-      newX =
-        Math.max(
-          margin,
-          Math.random() * maxX
-        );
+  let friendTop =
+    noBtn.getBoundingClientRect().top;
 
 
-      newY =
-        Math.max(
-          margin,
-          Math.random() * maxY
-        );
+  if (
+    friendLeft +
+    friendRect.width +
+    margin >
+    window.innerWidth
+  ) {
 
+    friendLeft = margin;
 
-      // Éviter le bouton Oui
-      overlapsYes = !(
-        newX + btnRect.width <
-          yesRect.left - 10 ||
-
-        newX >
-          yesRect.right + 10 ||
-
-        newY + btnRect.height <
-          yesRect.top - 10 ||
-
-        newY >
-          yesRect.bottom + 10
-      );
-
-    } while (overlapsYes);
-
-
-    noBtn.style.left =
-      newX + "px";
-
-    noBtn.style.top =
-      newY + "px";
-
-    noBtnPositioned = true;
+    friendTop =
+      noBtn.getBoundingClientRect().bottom +
+      gap;
   }
 
 
-  // ==============================
-  // 😂 DODGE
-  // ==============================
+  friendBtn.style.left =
+    Math.max(margin, friendLeft) + "px";
 
-  function dodge() {
+  friendBtn.style.top =
+    Math.max(margin, friendTop) + "px";
 
-    attempts++;
 
-    moveNoButton();
+  noBtnPositioned = true;
+  friendBtnPositioned = true;
+}
 
+
+// ==============================
+// 🏃 FAIRE FUIR UN BOUTON
+// ==============================
+
+function moveButton(button) {
+
+  const btnRect =
+    button.getBoundingClientRect();
+
+  const yesRect =
+    yesBtn.getBoundingClientRect();
+
+  const otherBtn =
+    button === noBtn
+      ? friendBtn
+      : noBtn;
+
+  const otherRect =
+    otherBtn.getBoundingClientRect();
+
+
+  const margin = 20;
+
+  let newX;
+  let newY;
+
+  let overlapsYes;
+  let overlapsOther;
+
+  let safetyCounter = 0;
+
+
+  do {
+
+    const maxX =
+      window.innerWidth -
+      btnRect.width -
+      margin;
+
+    const maxY =
+      window.innerHeight -
+      btnRect.height -
+      margin;
+
+
+    newX =
+      margin +
+      Math.random() *
+      Math.max(0, maxX - margin);
+
+
+    newY =
+      margin +
+      Math.random() *
+      Math.max(0, maxY - margin);
+
+
+    // ------------------------------
+    // Éviter le bouton OUI
+    // ------------------------------
+
+    overlapsYes = !(
+      newX +
+      btnRect.width <
+      yesRect.left - 15 ||
+
+      newX >
+      yesRect.right + 15 ||
+
+      newY +
+      btnRect.height <
+      yesRect.top - 15 ||
+
+      newY >
+      yesRect.bottom + 15
+    );
+
+
+    // ------------------------------
+    // Éviter l'autre bouton
+    // ------------------------------
+
+    overlapsOther = !(
+      newX +
+      btnRect.width <
+      otherRect.left - 15 ||
+
+      newX >
+      otherRect.right + 15 ||
+
+      newY +
+      btnRect.height <
+      otherRect.top - 15 ||
+
+      newY >
+      otherRect.bottom + 15
+    );
+
+
+    safetyCounter++;
+
+    // Éviter une boucle infinie
+    if (safetyCounter > 100) {
+      break;
+    }
+
+  } while (
+    overlapsYes ||
+    overlapsOther
+  );
+
+
+  button.style.left =
+    newX + "px";
+
+  button.style.top =
+    newY + "px";
+}
+
+
+// ==============================
+// 😂 BOUTON "J'AI UN GARS"
+// ==============================
+
+function dodgeNo() {
+
+  attempts++;
+
+  moveButton(noBtn);
+
+
+  result.textContent =
+    dodgeMessages[
+      Math.floor(
+        Math.random() *
+        dodgeMessages.length
+      )
+    ];
+
+
+  triesEl.textContent =
+    attempts === 1
+      ? "1 tentative pour t'échapper 😏"
+      : attempts +
+        " tentatives pour t'échapper 😏";
+
+
+  growYesButton();
+}
+
+
+// ==============================
+// 🤝 BOUTON "JUSTE AMI"
+// ==============================
+
+function dodgeFriend() {
+
+  attempts++;
+
+  moveButton(friendBtn);
+
+
+  result.textContent =
+    friendMessages[
+      Math.floor(
+        Math.random() *
+        friendMessages.length
+      )
+    ];
+
+
+  triesEl.textContent =
+    attempts === 1
+      ? "1 tentative pour devenir juste amie 😂"
+      : attempts +
+        " tentatives pour devenir juste amie 😂";
+
+
+  growYesButton();
+}
+
+
+// ==============================
+// 💖 FAIRE GRANDIR LE BOUTON OUI
+// ==============================
+
+function growYesButton() {
+
+  const scale =
+    Math.min(
+      1 + attempts * 0.05,
+      1.5
+    );
+
+
+  yesBtn.style.transform =
+    `scale(${scale})`;
+}
+
+
+// ==============================
+// 🖱️ SOURIS — BOUTON NON
+// ==============================
+
+noBtn.addEventListener(
+  "mouseenter",
+  dodgeNo
+);
+
+
+// ==============================
+// 🖱️ SOURIS — BOUTON AMI
+// ==============================
+
+friendBtn.addEventListener(
+  "mouseenter",
+  dodgeFriend
+);
+
+
+// ==============================
+// 🖱️ CLIC — BOUTON NON
+// ==============================
+
+noBtn.addEventListener(
+  "click",
+  function (e) {
+
+    e.preventDefault();
+
+    dodgeNo();
+
+  }
+);
+
+
+// ==============================
+// 🖱️ CLIC — BOUTON AMI
+// ==============================
+
+friendBtn.addEventListener(
+  "click",
+  function (e) {
+
+    e.preventDefault();
+
+    dodgeFriend();
+
+  }
+);
+
+
+// ==============================
+// 📱 TACTILE — BOUTON NON
+// ==============================
+
+noBtn.addEventListener(
+  "touchstart",
+  function (e) {
+
+    e.preventDefault();
+
+    dodgeNo();
+
+  },
+  {
+    passive: false
+  }
+);
+
+
+// ==============================
+// 📱 TACTILE — BOUTON AMI
+// ==============================
+
+friendBtn.addEventListener(
+  "touchstart",
+  function (e) {
+
+    e.preventDefault();
+
+    dodgeFriend();
+
+  },
+  {
+    passive: false
+  }
+);
+
+
+// ==============================
+// ❤️ BOUTON OUI
+// ==============================
+
+yesBtn.addEventListener(
+  "click",
+  function () {
 
     result.textContent =
-      dodgeMessages[
+      yesMessages[
         Math.floor(
           Math.random() *
-          dodgeMessages.length
+          yesMessages.length
         )
       ];
 
 
-    triesEl.textContent =
-      attempts === 1
-        ? "1 tentative pour t'échapper 😏"
-        : attempts +
-          " tentatives pour t'échapper 😏";
+    triesEl.textContent = "";
 
 
-    // Faire grandir le bouton Oui
-    const scale =
-      Math.min(
-        1 + attempts * 0.05,
-        1.5
-      );
+    // Cacher les trois boutons
+
+    noBtn.style.display =
+      "none";
+
+    friendBtn.style.display =
+      "none";
+
+    yesBtn.style.display =
+      "none";
 
 
-    yesBtn.style.transform =
-      `scale(${scale})`;
+    // Changer le cœur en 🎉
+
+    document.querySelector(
+      ".emoji"
+    ).textContent = "🎉";
+
+
+    // Confettis
+
+    createConfetti();
+
+
+    // Afficher la première étape
+
+    showStep(0);
+
+    carousel.classList.add(
+      "active"
+    );
   }
+);
 
 
-  // ==============================
-  // 🖱️ SOURIS
-  // ==============================
+// ==============================
+// 💗 COEURS FLOTTANTS
+// ==============================
 
-  noBtn.addEventListener(
-    "mouseenter",
-    dodge
-  );
+function createHearts() {
 
-
-  noBtn.addEventListener(
-    "click",
-    function (e) {
-
-      e.preventDefault();
-
-      dodge();
-
-    }
-  );
+  const heartsContainer =
+    document.body;
 
 
-  // ==============================
-  // 📱 TACTILE
-  // ==============================
+  setInterval(function () {
 
-  noBtn.addEventListener(
-    "touchstart",
-    function (e) {
-
-      e.preventDefault();
-
-      dodge();
-
-    },
-    { passive: false }
-  );
+    const heart =
+      document.createElement("div");
 
 
-  // ==============================
-  // ❤️ BOUTON OUI
-  // ==============================
-
-  yesBtn.addEventListener(
-    "click",
-    function () {
-
-      result.textContent =
-        yesMessages[
-          Math.floor(
-            Math.random() *
-            yesMessages.length
-          )
-        ];
+    heart.className =
+      "heart";
 
 
-      triesEl.textContent = "";
+    heart.textContent =
+      "💗";
 
 
-      noBtn.style.display = "none";
-
-      yesBtn.style.display = "none";
-
-
-      document.querySelector(
-        ".emoji"
-      ).textContent = "🎉";
+    heart.style.left =
+      Math.random() * 100 + "vw";
 
 
-      createConfetti();
+    heart.style.fontSize =
+      16 +
+      Math.random() * 20 +
+      "px";
 
 
-      showStep(0);
-
-      carousel.classList.add("active");
-    }
-  );
-
-
-  // ==============================
-  // 💗 COEURS FLOTTANTS
-  // ==============================
-
-  function createHearts() {
-
-    const heartsContainer =
-      document.body;
+    heart.style.animationDuration =
+      6 +
+      Math.random() * 4 +
+      "s";
 
 
-    setInterval(function () {
-
-      const heart =
-        document.createElement("div");
-
-
-      heart.className = "heart";
-
-      heart.textContent = "💗";
+    heartsContainer.appendChild(
+      heart
+    );
 
 
-      heart.style.left =
-        Math.random() * 100 + "vw";
+    setTimeout(function () {
+
+      heart.remove();
+
+    }, 10000);
+
+  }, 600);
+}
 
 
-      heart.style.fontSize =
-        16 +
-        Math.random() * 20 +
-        "px";
+// ==============================
+// 🎉 CONFETTIS
+// ==============================
+
+function createConfetti() {
+
+  const colors = [
+    "#ff5da2",
+    "#ffd166",
+    "#06d6a0",
+    "#118ab2",
+    "#ef476f"
+  ];
 
 
-      heart.style.animationDuration =
-        6 +
-        Math.random() * 4 +
-        "s";
+  for (
+    let i = 0;
+    i < 60;
+    i++
+  ) {
+
+    const c =
+      document.createElement("div");
 
 
-      heartsContainer.appendChild(
-        heart
-      );
+    c.style.position =
+      "fixed";
+
+    c.style.top =
+      "-10px";
+
+    c.style.left =
+      Math.random() * 100 + "vw";
+
+    c.style.width =
+      "8px";
+
+    c.style.height =
+      "8px";
+
+    c.style.background =
+      colors[
+        Math.floor(
+          Math.random() *
+          colors.length
+        )
+      ];
+
+    c.style.borderRadius =
+      "50%";
+
+    c.style.zIndex =
+      "10";
+
+    c.style.pointerEvents =
+      "none";
+
+    c.style.transition =
+      "transform 2.5s ease-in, opacity 2.5s ease-in";
 
 
-      setTimeout(function () {
+    document.body.appendChild(c);
 
-        heart.remove();
 
-      }, 10000);
+    requestAnimationFrame(function () {
 
-    }, 600);
+      c.style.transform =
+        `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`;
+
+      c.style.opacity =
+        "0";
+
+    });
+
+
+    setTimeout(function () {
+
+      c.remove();
+
+    }, 2600);
+
   }
+}
 
 
-  // ==============================
-  // 🎉 CONFETTIS
-  // ==============================
+// ==============================
+// 🔄 REDIMENSIONNEMENT
+// ==============================
 
-  function createConfetti() {
+window.addEventListener(
+  "resize",
+  function () {
 
-    const colors = [
-      "#ff5da2",
-      "#ffd166",
-      "#06d6a0",
-      "#118ab2",
-      "#ef476f"
-    ];
+    if (
+      noBtnPositioned &&
+      noBtn.style.display !== "none"
+    ) {
 
-
-    for (let i = 0; i < 60; i++) {
-
-      const c =
-        document.createElement("div");
-
-
-      c.style.position = "fixed";
-      c.style.top = "-10px";
-      c.style.left =
-        Math.random() * 100 + "vw";
-
-      c.style.width = "8px";
-      c.style.height = "8px";
-
-      c.style.background =
-        colors[
-          Math.floor(
-            Math.random() *
-            colors.length
-          )
-        ];
-
-      c.style.borderRadius = "50%";
-      c.style.zIndex = "10";
-      c.style.pointerEvents = "none";
-
-      c.style.transition =
-        "transform 2.5s ease-in, opacity 2.5s ease-in";
-
-
-      document.body.appendChild(c);
-
-
-      requestAnimationFrame(function () {
-
-        c.style.transform =
-          `translateY(${window.innerHeight + 20}px) rotate(${Math.random() * 720}deg)`;
-
-        c.style.opacity = "0";
-
-      });
-
-
-      setTimeout(function () {
-
-        c.remove();
-
-      }, 2600);
+      moveButton(noBtn);
 
     }
+
+
+    if (
+      friendBtnPositioned &&
+      friendBtn.style.display !== "none"
+    ) {
+
+      moveButton(friendBtn);
+
+    }
+
   }
+);
 
 
-  // ==============================
-  // 🔄 REDIMENSIONNEMENT
-  // ==============================
+// ==============================
+// 🚀 INITIALISATION
+// ==============================
 
-  window.addEventListener(
-    "resize",
-    function () {
+window.addEventListener(
+  "load",
+  function () {
 
-      if (noBtnPositioned) {
-        moveNoButton();
-      }
+    placeButtonsInitially();
 
-    }
-  );
+  }
+);
 
 
-  // ==============================
-  // 🚀 INITIALISATION
-  // ==============================
+// Démarrer les cœurs
 
-  window.addEventListener(
-    "load",
-    placeNoButtonInitially
-  );
-
-
-  createHearts();
-
+createHearts();
 </script>
 
 </body>
